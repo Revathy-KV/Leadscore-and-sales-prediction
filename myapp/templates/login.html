@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<style>
+.auth-wrapper{ min-height:80vh; display:flex; align-items:center; justify-content:center; }
+.auth-card{ width:420px; background:linear-gradient(145deg,rgba(15,23,42,.97),rgba(24,24,27,.96)); border:1px solid rgba(255,255,255,.08); border-radius:28px; padding:40px; box-shadow:0 20px 50px rgba(0,0,0,.45); position:relative; overflow:hidden; }
+.auth-card::before{ content:""; position:absolute; top:-80px; right:-80px; width:220px; height:220px; background:radial-gradient(circle,rgba(124,58,237,.35),transparent 70%); }
+.auth-title{ font-size:28px; font-weight:800; color:white; margin-bottom:6px; }
+.auth-subtitle{ font-size:14px; color:#9ca3af; margin-bottom:28px; }
+.field{ margin-bottom:18px; }
+.field label{ display:block; font-size:13px; font-weight:700; color:#d1d5db; margin-bottom:7px; }
+.field input{ width:100%; padding:13px 16px; border-radius:14px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.05); color:white; font-size:14px; outline:none; transition:.3s; }
+.field input:focus{ border-color:#7c3aed; box-shadow:0 0 0 4px rgba(124,58,237,.15); }
+.submit-btn{ width:100%; padding:15px; border:none; border-radius:16px; background:linear-gradient(135deg,#2563eb,#7c3aed); color:white; font-size:15px; font-weight:700; cursor:pointer; transition:.3s; margin-top:8px; }
+.submit-btn:hover{ transform:translateY(-2px); }
+.error-box{ background:rgba(239,68,68,.15); border:1px solid rgba(239,68,68,.3); color:#f87171; padding:12px 16px; border-radius:12px; font-size:13px; margin-bottom:18px; }
+.bottom-link{ text-align:center; margin-top:22px; font-size:14px; color:#9ca3af; }
+.bottom-link a{ color:#7c3aed; font-weight:700; text-decoration:none; }
+.bottom-link a:hover{ color:#a78bfa; }
+.logo{ font-size:28px; font-weight:900; background:linear-gradient(90deg,#60a5fa,#7c3aed); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:24px; display:block; }
+</style>
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <span class="logo">NEXA</span>
+    <div class="auth-title">Welcome Back 👋</div>
+    <div class="auth-subtitle">Login to your NEXA CRM account</div>
+
+    {% if error %}
+    <div class="error-box">⚠ {{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="field">
+        <label>Username</label>
+        <input type="text" name="username" placeholder="Enter username" required>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" name="password" placeholder="Enter password" required>
+      </div>
+      <button type="submit" class="submit-btn">Login →</button>
+    </form>
+
+    <div class="bottom-link">
+      Don't have an account?
+      <a href="{% url 'register' %}">Register here</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

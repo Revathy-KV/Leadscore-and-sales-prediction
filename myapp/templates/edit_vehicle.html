@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block title %}Edit Vehicle{% endblock %}
+
+{% block content %}
+<style>
+.edit-wrapper{ max-width:900px; margin:auto; padding:20px; }
+.back-btn{ display:inline-block; color:#7c3aed; text-decoration:none; font-weight:700; margin-bottom:20px; }
+.edit-title{ font-size:34px; font-weight:800; margin-bottom:28px; background:linear-gradient(90deg,#ffffff,#7c3aed,#2563eb); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.edit-card{ background:linear-gradient(145deg,rgba(15,23,42,.96),rgba(24,24,27,.95),rgba(30,41,59,.95)); border:1px solid rgba(255,255,255,.08); border-radius:28px; padding:38px; box-shadow:0 15px 40px rgba(0,0,0,.35); position:relative; overflow:hidden; margin-bottom:24px; }
+.edit-card::before{ content:""; position:absolute; top:-120px; right:-120px; width:260px; height:260px; background:radial-gradient(circle,rgba(124,58,237,.35),transparent 70%); }
+.section-title{ color:#c4b5fd; margin-top:10px; margin-bottom:18px; font-size:18px; font-weight:700; }
+.edit-card label{ display:block; margin-bottom:6px; color:#d1d5db; font-size:13px; font-weight:700; }
+.edit-card input,.edit-card select{ width:100%; padding:12px 14px; margin-bottom:14px; border-radius:14px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.05); color:white; outline:none; transition:.3s; font-size:14px; }
+.edit-card input:focus,.edit-card select:focus{ border-color:#7c3aed; box-shadow:0 0 0 4px rgba(124,58,237,.15); }
+.edit-card select option{ background:#1f2937; }
+.two-col{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.box{ background:rgba(255,255,255,.04); padding:20px; border-radius:20px; margin-bottom:14px; border:1px solid rgba(255,255,255,.06); }
+.delete-row{ display:flex; align-items:center; gap:8px; color:#f87171; font-size:13px; margin-top:4px; }
+.delete-row input[type="checkbox"]{ width:auto; margin:0; }
+.add-btn{ width:100%; padding:13px; margin-top:6px; border-radius:14px; font-size:14px; font-weight:700; color:white; background:linear-gradient(135deg,#7c3aed,#2563eb); border:none; cursor:pointer; transition:.3s; }
+.add-btn:hover{ transform:translateY(-2px); }
+.update-btn{ width:100%; padding:16px; margin-top:10px; border-radius:18px; font-size:16px; font-weight:800; color:white; background:linear-gradient(135deg,#2563eb,#7c3aed); box-shadow:0 10px 30px rgba(37,99,235,.35); border:none; cursor:pointer; transition:.3s; }
+.update-btn:hover{ transform:translateY(-3px); }
+.current-photo img{ width:100%; max-height:180px; object-fit:cover; border-radius:12px; margin-bottom:8px; }
+.photo-note{ font-size:11px; color:#9ca3af; margin-bottom:8px; }
+@media(max-width:768px){ .edit-card{ padding:20px; } .two-col{ grid-template-columns:1fr; } }
+</style>
+
+<div class="edit-wrapper">
+
+  <a href="{% url 'vehicles' %}" class="back-btn">← Back to Vehicles</a>
+  <h1 class="edit-title">✏️ Edit — {{ vehicle.name }}</h1>
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="edit-card">
+      <div class="section-title">🚗 Vehicle Details</div>
+      <div class="two-col">
+        <div>
+          <label>Name</label>
+          {{ vehicle_form.name }}
+        </div>
+        <div>
+          <label>Fuel Type</label>
+          {{ vehicle_form.fuel_type }}
+        </div>
+        <div>
+          <label>Max Capacity</label>
+          {{ vehicle_form.max_capacity }}
+        </div>
+        <div>
+          <label>Power Figures</label>
+          {{ vehicle_form.power_figures }}
+        </div>
+        <div>
+          <label>Price</label>
+          {{ vehicle_form.price }}
+        </div>
+        <div>
+          <label>Photo</label>
+          {% if vehicle.photo %}
+            <div class="current-photo">
+              <img src="{{ vehicle.photo.url }}" alt="{{ vehicle.name }}">
+              <div class="photo-note">Current photo — upload new to replace</div>
+            </div>
+          {% endif %}
+          {{ vehicle_form.photo }}
+        </div>
+      </div>
+    </div>
+
+    <div class="edit-card">
+      <div class="section-title">🎨 Colors</div>
+      {{ color_formset.management_form }}
+      <div id="color-forms">
+        {% for form in color_formset %}
+          <div class="box">
+            {{ form.id }}
+            <div class="two-col">
+              <div>
+                <label>Color Name</label>
+                {{ form.color_name }}
+              </div>
+              <div>
+                <label>Color Code</label>
+                {{ form.color_code }}
+              </div>
+            </div>
+            <label>Color Photo</label>
+            {{ form.photo }}
+            <div class="delete-row">
+              {{ form.DELETE }}
+              <span>Delete this color</span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <button type="button" class="add-btn" onclick="addColor()">+ Add Color</button>
+    </div>
+
+    <div class="edit-card">
+      <div class="section-title">🔧 Variants</div>
+      {{ variant_formset.management_form }}
+      <div id="variant-forms">
+        {% for form in variant_formset %}
+          <div class="box">
+            {{ form.id }}
+            <div class="two-col">
+              <div>
+                <label>Variant Name</label>
+                {{ form.name }}
+              </div>
+              <div>
+                <label>Fuel Type</label>
+                {{ form.fuel_type }}
+              </div>
+              <div>
+                <label>Transmission</label>
+                {{ form.transmission }}
+              </div>
+              <div>
+                <label>Ex-Showroom Price</label>
+                {{ form.ex_showroom_price }}
+              </div>
+            </div>
+            <div class="delete-row">
+              {{ form.DELETE }}
+              <span>Delete this variant</span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <button type="button" class="add-btn" onclick="addVariant()">+ Add Variant</button>
+    </div>
+
+    <button type="submit" class="update-btn">🚀 Update Vehicle</button>
+
+  </form>
+</div>
+
+<script>
+function addColor() {
+    const total     = document.getElementById("id_colors-TOTAL_FORMS");
+    const container = document.getElementById("color-forms");
+    let count       = parseInt(total.value);
+    const clone     = container.children[0].cloneNode(true);
+    clone.innerHTML = clone.innerHTML
+        .replace(/-0-/g, `-${count}-`)
+        .replace(/_0_/g, `_${count}_`);
+    clone.querySelectorAll("input").forEach(i => {
+        if (i.type !== "hidden") i.value = "";
+        if (i.name.includes("DELETE")) i.checked = false;
+    });
+    container.appendChild(clone);
+    total.value = count + 1;
+}
+
+function addVariant() {
+    const total     = document.getElementById("id_variants-TOTAL_FORMS");
+    const container = document.getElementById("variant-forms");
+    let count       = parseInt(total.value);
+    const clone     = container.children[0].cloneNode(true);
+    clone.innerHTML = clone.innerHTML
+        .replace(/-0-/g, `-${count}-`)
+        .replace(/_0_/g, `_${count}_`);
+    clone.querySelectorAll("input, select").forEach(i => {
+        if (i.type !== "hidden") i.value = "";
+        if (i.name.includes("DELETE")) i.checked = false;
+    });
+    container.appendChild(clone);
+    total.value = count + 1;
+}
+</script>
+
+{% endblock %}

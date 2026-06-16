@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Quote {{ quote.quote_number }}{% endblock %}
+
+{% block content %}
+
+{% if quote.is_final %}
+<div class="success-banner">
+    ✅ Quote Finalized
+</div>
+{% endif %}
+
+<div class="form-card">
+
+    <h2>🧾 Quote {{ quote.quote_number }}</h2>
+
+    <p><b>Customer:</b> {{ quote.lead.first_name }} {{ quote.lead.last_name }}</p>
+    <p><b>Phone:</b> {{ quote.lead.phone }}</p>
+    <p><b>Vehicle:</b> {{ quote.vehicle.name }}</p>
+    <p><b>Date:</b> {{ quote.created_at }}</p>
+    <p><b>Valid Till:</b> {{ quote.valid_till }}</p>
+
+    <table class="table">
+
+        <tr>
+            <td>Ex-showroom Price</td>
+            <td>₹ {{ quote.base_price }}</td>
+        </tr>
+
+        <tr>
+            <td>Registration</td>
+            <td>₹ {{ quote.registration_charge }}</td>
+        </tr>
+
+        <tr>
+            <td>Insurance</td>
+            <td>₹ {{ quote.insurance }}</td>
+        </tr>
+
+        <tr>
+            <td>Road Tax</td>
+            <td>₹ {{ quote.road_tax }}</td>
+        </tr>
+
+        <tr>
+            <td>Accessories</td>
+            <td>₹ {{ quote.accessories }}</td>
+        </tr>
+
+        <tr>
+            <td colspan="2"><b>Discounts</b></td>
+        </tr>
+
+        <tr>
+            <td>Dealer Discount</td>
+            <td>- ₹ {{ quote.dealer_discount }}</td>
+        </tr>
+
+        <tr>
+            <td>Exchange Bonus</td>
+            <td>- ₹ {{ quote.exchange_bonus }}</td>
+        </tr>
+
+        <tr>
+            <td>Festival Discount</td>
+            <td>- ₹ {{ quote.festival_discount }}</td>
+        </tr>
+
+        <tr>
+            <td><b>Final On-road Price</b></td>
+            <td><b>₹ {{ quote.total_price }}</b></td>
+        </tr>
+
+    </table>
+
+    <div class="action-buttons">
+
+        <a href="{% url 'view_lead' quote.lead.id %}"
+           class="btn-secondary">
+            ← Back to Lead
+        </a>
+
+        <a href="{% url 'download_quote' quote.id %}"
+           class="btn-primary">
+            ⬇️ Download PDF
+        </a>
+
+    </div>
+
+    <br>
+
+    {% if not quote.is_final %}
+
+        <a href="{% url 'edit_quote' quote.id %}"
+           class="btn-primary">
+            ✏️ Edit Quote
+        </a>
+
+        <a href="{% url 'mark_quote_final' quote.id %}"
+           class="btn-success">
+            ✅ Mark Final
+        </a>
+
+    {% else %}
+
+        <span class="badge-success">
+            ✔ FINALIZED
+        </span>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

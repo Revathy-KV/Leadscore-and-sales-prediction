@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Vehicles{% endblock %}
+
+{% block content %}
+<style>
+.vehicle-container{ padding:30px; }
+.top-section{ display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; }
+.page-title{ font-size:36px; font-weight:800; background:linear-gradient(90deg,#fff,#7c3aed,#2563eb);-webkit-background-clip:text;-webkit-text-fill-color:transparent; }
+.add-btn{ padding:14px 22px; border-radius:14px; text-decoration:none; color:white; font-weight:700; background:linear-gradient(135deg,#2563eb,#7c3aed); }
+.vehicle-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:28px; }
+.vehicle-card{ background:#111827; border-radius:24px; overflow:hidden; border:1px solid rgba(255,255,255,.06); transition:.3s; }
+.vehicle-card:hover{ transform:translateY(-6px); box-shadow:0 14px 30px rgba(0,0,0,.35); }
+.vehicle-image{ width:100%; height:220px; object-fit:cover; }
+.no-image{ width:100%; height:220px; background:linear-gradient(135deg,#1e3a8a,#7c3aed); display:flex; align-items:center; justify-content:center; font-size:60px; }
+.vehicle-body{ padding:20px; }
+.vehicle-name{ font-size:24px; font-weight:800; color:white; margin-bottom:10px; }
+.vehicle-info{ color:#d1d5db; margin-bottom:6px; font-size:14px; }
+.button-group{ display:flex; gap:10px; margin-top:18px; }
+.view-btn,.edit-btn,.delete-btn{ flex:1; padding:12px; border-radius:12px; text-decoration:none; text-align:center; font-weight:700; color:white; font-size:14px; border:none; cursor:pointer; }
+.view-btn{ background:#2563eb; }
+.edit-btn{ background:#7c3aed; }
+.delete-btn{ background:#dc2626; }
+.view-btn:hover{ background:#1d4ed8; }
+.edit-btn:hover{ background:#6d28d9; }
+.delete-btn:hover{ background:#b91c1c; }
+.empty-box{ background:#111827; padding:40px; border-radius:20px; text-align:center; color:#cbd5e1; }
+@media(max-width:1100px){ .vehicle-grid{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:700px){ .vehicle-grid{ grid-template-columns:1fr; } }
+</style>
+
+<div class="vehicle-container">
+
+  <div class="top-section">
+    <h1 class="page-title">🚗 Vehicles</h1>
+    <a href="{% url 'add_vehicle' %}" class="add-btn">+ Add Vehicle</a>
+  </div>
+
+  {% if vehicles %}
+  <div class="vehicle-grid">
+    {% for vehicle in vehicles %}
+    <div class="vehicle-card">
+
+      {% if vehicle.photo %}
+        <img src="{{ vehicle.photo.url }}" class="vehicle-image" alt="{{ vehicle.name }}">
+      {% else %}
+        <div class="no-image">🚗</div>
+      {% endif %}
+
+      <div class="vehicle-body">
+        <div class="vehicle-name">{{ vehicle.name }}</div>
+        <div class="vehicle-info">⛽ Fuel: {{ vehicle.fuel_type }}</div>
+        <div class="vehicle-info">💰 Price: ₹ {{ vehicle.price|floatformat:0 }}</div>
+        <div class="vehicle-info">👥 Capacity: {{ vehicle.max_capacity }}</div>
+        <div class="vehicle-info">⚡ Power: {{ vehicle.power_figures }}</div>
+
+        <div class="button-group">
+          <a href="{% url 'vehicle_detail' vehicle.pk %}" class="view-btn">👁 View</a>
+          <a href="{% url 'edit_vehicle' vehicle.pk %}" class="edit-btn">✏️ Edit</a>
+          <a href="{% url 'delete_vehicle' vehicle.pk %}" class="delete-btn">🗑 Delete</a>
+        </div>
+      </div>
+
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-box">
+    <h2>No Vehicles Added Yet</h2>
+    <br>
+    <p>Click "Add Vehicle" to create your first vehicle.</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

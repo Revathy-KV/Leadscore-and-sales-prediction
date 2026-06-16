@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Select Lead{% endblock %}
+
+{% block content %}
+
+<a href="{% url 'variant_action' variant.id %}" class="back-link">← Back</a>
+
+<h2>Select Lead for Quote</h2>
+
+<p class="text-muted">
+    Variant: <b>{{ variant.name }}</b>
+</p>
+
+<form method="get" class="search-box">
+    <input type="text"
+           name="q"
+           placeholder="Search by name, phone, city or lead ID..."
+           value="{{ query|default:'' }}">
+    <button type="submit" class="btn-primary">Search</button>
+</form>
+
+{% for lead in leads %}
+
+<div class="lead-card">
+    <div>
+        <h4>{{ lead.first_name }} {{ lead.last_name }}</h4>
+        <p>
+            📞 {{ lead.phone }} |
+            📍 {{ lead.city }} |
+            🪪 ID {{ lead.id }}
+        </p>
+        <p>Status: <b>{{ lead.status|title }}</b></p>
+    </div>
+
+    <a href="{% url 'create_quote_variant' variant.id lead.id %}" class="btn-primary">
+        Select →
+    </a>
+</div>
+
+{% empty %}
+<p>No leads found.</p>
+{% endfor %}
+
+{% endblock %}

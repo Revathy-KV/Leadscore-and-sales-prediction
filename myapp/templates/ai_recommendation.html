@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>
+🤖 AI Recommendation
+</h2>
+
+<h4>
+{{ lead.first_name }} {{ lead.last_name }}
+</h4>
+
+<ul>
+{% for item in recommendations %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

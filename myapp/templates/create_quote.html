@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Create Quote{% endblock %}
+
+{% block content %}
+
+<div class="form-card">
+
+    <h2>🧾 Create Quote</h2>
+
+    <p><b>Vehicle:</b> {{ vehicle.name }}</p>
+    <p>
+        <b>Variant:</b> {{ variant.name }}
+        (₹ {{ variant.ex_showroom_price }})
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="card-section">
+            <h4>🚗 Charges</h4>
+
+            {{ form.registration_charge.label_tag }}
+            {{ form.registration_charge }}
+
+            {{ form.insurance.label_tag }}
+            {{ form.insurance }}
+
+            {{ form.road_tax.label_tag }}
+            {{ form.road_tax }}
+
+            {{ form.accessories.label_tag }}
+            {{ form.accessories }}
+        </div>
+
+        <div class="card-section">
+            <h4>💸 Discounts</h4>
+
+            {{ form.dealer_discount.label_tag }}
+            {{ form.dealer_discount }}
+
+            {{ form.exchange_bonus.label_tag }}
+            {{ form.exchange_bonus }}
+
+            {{ form.festival_discount.label_tag }}
+            {{ form.festival_discount }}
+        </div>
+
+        <button type="submit" class="btn-primary">
+            Generate Quote
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

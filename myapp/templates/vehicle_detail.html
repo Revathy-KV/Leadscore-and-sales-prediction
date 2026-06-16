@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}{{ vehicle.name }}{% endblock %}
+
+{% block content %}
+<style>
+.detail-wrap{ padding:30px; max-width:900px; }
+.back-btn{ color:#7c3aed; text-decoration:none; font-weight:700; display:inline-block; margin-bottom:20px; }
+.detail-card{ background:#111827; border-radius:24px; overflow:hidden; border:1px solid rgba(255,255,255,.08); }
+.detail-image{ width:100%; height:350px; object-fit:cover; }
+.no-image{ width:100%; height:350px; background:linear-gradient(135deg,#1e3a8a,#7c3aed); display:flex; align-items:center; justify-content:center; font-size:80px; }
+.detail-body{ padding:30px; }
+.detail-name{ font-size:32px; font-weight:800; color:white; margin-bottom:20px; }
+.info-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:30px; }
+.info-box{ background:rgba(255,255,255,.05); border-radius:14px; padding:16px; }
+.info-label{ font-size:12px; color:#7c3aed; font-weight:700; margin-bottom:4px; }
+.info-value{ font-size:16px; color:white; font-weight:700; }
+.section-title{ font-size:18px; font-weight:700; color:white; margin:24px 0 14px; }
+.color-row{ display:flex; gap:12px; flex-wrap:wrap; }
+.color-chip{ display:flex; align-items:center; gap:8px; background:rgba(255,255,255,.05); padding:8px 14px; border-radius:20px; }
+.color-dot{ width:20px; height:20px; border-radius:50%; border:2px solid rgba(255,255,255,.2); }
+.color-name{ font-size:13px; color:#d1d5db; }
+.variant-table{ width:100%; border-collapse:collapse; }
+.variant-table th{ background:linear-gradient(90deg,#2563eb,#7c3aed); padding:12px 16px; text-align:left; font-size:13px; color:white; }
+.variant-table td{ padding:12px 16px; border-bottom:1px solid rgba(255,255,255,.05); font-size:13px; color:#d1d5db; }
+.btn-row{ display:flex; gap:12px; margin-top:24px; }
+.edit-btn{ padding:13px 28px; border-radius:12px; background:#7c3aed; color:white; text-decoration:none; font-weight:700; }
+.delete-btn{ padding:13px 28px; border-radius:12px; background:#dc2626; color:white; text-decoration:none; font-weight:700; }
+</style>
+
+<div class="detail-wrap">
+  <a href="{% url 'vehicles' %}" class="back-btn">← Back to Vehicles</a>
+
+  <div class="detail-card">
+
+    {% if vehicle.photo %}
+      <img src="{{ vehicle.photo.url }}" class="detail-image" alt="{{ vehicle.name }}">
+    {% else %}
+      <div class="no-image">🚗</div>
+    {% endif %}
+
+    <div class="detail-body">
+      <div class="detail-name">{{ vehicle.name }}</div>
+
+      <div class="info-grid">
+        <div class="info-box">
+          <div class="info-label">⛽ FUEL TYPE</div>
+          <div class="info-value">{{ vehicle.fuel_type }}</div>
+        </div>
+        <div class="info-box">
+          <div class="info-label">💰 PRICE</div>
+          <div class="info-value">₹ {{ vehicle.price }}</div>
+        </div>
+        <div class="info-box">
+          <div class="info-label">👥 CAPACITY</div>
+          <div class="info-value">{{ vehicle.max_capacity }} Persons</div>
+        </div>
+        <div class="info-box">
+          <div class="info-label">⚡ POWER</div>
+          <div class="info-value">{{ vehicle.power_figures }}</div>
+        </div>
+      </div>
+
+      <!-- Colors -->
+      {% if vehicle.colors.all %}
+      <div class="section-title">🎨 Available Colors</div>
+      <div class="color-row">
+        {% for color in vehicle.colors.all %}
+        <div class="color-chip">
+          <div class="color-dot" style="background:{{ color.color_code }};"></div>
+          <span class="color-name">{{ color.color_name }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Variants -->
+      {% if vehicle.variants.all %}
+      <div class="section-title">🔧 Variants</div>
+      <table class="variant-table">
+        <thead>
+          <tr>
+            <th>Variant</th>
+            <th>Fuel</th>
+            <th>Transmission</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for variant in vehicle.variants.all %}
+          <tr>
+            <td>{{ variant.name }}</td>
+            <td>{{ variant.fuel_type }}</td>
+            <td>{{ variant.transmission }}</td>
+            <td>₹ {{ variant.ex_showroom_price }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
+      <div class="btn-row">
+        <a href="{% url 'edit_vehicle' vehicle.pk %}" class="edit-btn">✏️ Edit Vehicle</a>
+        <a href="{% url 'delete_vehicle' vehicle.pk %}" class="delete-btn">🗑 Delete Vehicle</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

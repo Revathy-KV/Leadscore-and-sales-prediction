@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Delete Quote{% endblock %}
+
+{% block content %}
+
+<div class="form-card">
+
+    <h3>⚠️ Delete Quote</h3>
+
+    <p>
+        Are you sure you want to delete
+        <b>{{ quote.quote_number }}</b>?
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <button class="btn-danger">
+            Yes, Delete
+        </button>
+
+        <a href="{% url 'view_quote' quote.id %}"
+           class="btn-secondary">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

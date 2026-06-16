@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+{% block title %}{{ lead.first_name }} {{ lead.last_name }}{% endblock %}
+
+{% block content %}
+<style>
+.page{padding:20px;max-width:1000px;margin:0 auto;}
+.back-btn{display:inline-block;color:#7c3aed;text-decoration:none;font-weight:700;margin-bottom:20px;}
+.page-title{font-size:28px;font-weight:800;margin-bottom:24px;background:linear-gradient(90deg,#fff,#7c3aed,#2563eb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:24px;}
+.card{background:linear-gradient(145deg,rgba(15,23,42,.96),rgba(24,24,27,.95),rgba(30,41,59,.95));border:1px solid rgba(255,255,255,.08);border-radius:24px;overflow:hidden;margin-bottom:24px;box-shadow:0 12px 35px rgba(0,0,0,.35);}
+.card-header{padding:16px 22px;font-size:15px;font-weight:700;color:white;background:linear-gradient(90deg,#2563eb,#7c3aed);}
+.card-body{padding:22px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.info-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:14px;}
+.info-label{font-size:11px;color:#7c3aed;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;}
+.info-value{font-size:14px;color:#e5e7eb;font-weight:600;}
+.status-badge{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;color:white;display:inline-block;}
+.status-New{background:#3b82f6;}
+.status-Contacted{background:#10b981;}
+.status-Test_Driven{background:#8b5cf6;}
+.status-Test_Completed{background:#06b6d4;}
+.status-Won{background:#22c55e;}
+.status-Lost{background:#ef4444;}
+.priority-badge{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;}
+.priority-Low{background:rgba(34,197,94,.15);color:#4ade80;}
+.priority-Medium{background:rgba(234,179,8,.15);color:#facc15;}
+.priority-High{background:rgba(239,68,68,.15);color:#f87171;}
+.score-big{font-size:48px;font-weight:800;color:#8b5cf6;text-align:center;}
+.score-label{text-align:center;color:#9ca3af;font-size:13px;margin-top:4px;}
+.action-btn{display:block;padding:13px;text-align:center;border-radius:14px;text-decoration:none;font-weight:700;font-size:14px;margin-bottom:10px;border:none;cursor:pointer;width:100%;transition:.2s;}
+.btn-primary{background:linear-gradient(135deg,#2563eb,#7c3aed);color:white;}
+.btn-edit{background:rgba(234,179,8,.15);color:#facc15;border:1px solid rgba(234,179,8,.3);}
+.btn-delete{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3);}
+.btn-secondary{background:rgba(255,255,255,.06);color:#dbeafe;border:1px solid rgba(255,255,255,.08);}
+.action-btn:hover{opacity:.85;transform:translateY(-1px);}
+.followup-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:14px;margin-bottom:10px;}
+.followup-title{font-size:14px;font-weight:700;color:#e5e7eb;margin-bottom:4px;}
+.followup-meta{font-size:12px;color:#6b7280;}
+.quote-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+.quote-info{font-size:13px;color:#e5e7eb;}
+.quote-price{font-size:15px;font-weight:800;color:#4ade80;}
+.final-badge{background:rgba(34,197,94,.15);color:#4ade80;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:700;margin-left:8px;}
+.view-quote-btn{background:#2563eb;color:white;padding:7px 14px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:700;}
+.empty-text{color:#6b7280;font-size:13px;text-align:center;padding:20px;}
+@media(max-width:900px){.grid{grid-template-columns:1fr;}.info-grid{grid-template-columns:1fr;}}
+</style>
+
+<div class="page">
+  <a href="{% url 'my_leads' %}" class="back-btn">← Back to Leads</a>
+  <div class="page-title">👤 {{ lead.first_name }} {{ lead.last_name }}</div>
+
+  <div class="grid">
+
+    <!-- ===== LEFT ===== -->
+    <div>
+
+      <!-- Personal Info -->
+      <div class="card">
+        <div class="card-header">👤 Personal Information</div>
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-box">
+              <div class="info-label">First Name</div>
+              <div class="info-value">{{ lead.first_name }}</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Last Name</div>
+              <div class="info-value">{{ lead.last_name }}</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Email</div>
+              <div class="info-value">{{ lead.email }}</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Phone</div>
+              <div class="info-value">{{ lead.phone }}</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">City</div>
+              <div class="info-value">{{ lead.city|default:"—" }}</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Address</div>
+              <div class="info-value">{{ lead.address|default:"—" }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lead Details -->
+      <div class="card">
+        <div class="card-header">🚗 Lead Details</div>
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-box">
+              <div class="info-label">Status</div>
+              <div class="info-value">
+                <span class="status-badge status-{{ lead.status }}">{{ lead.status }}</span>
+              </div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Priority</div>
+              <div class="info-value">
+                <span class="priority-badge priority-{{ lead.priority }}">{{ lead.priority }}</span>
+              </div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Source</div>
+              <div class="info-value">{{ lead.source|default:"—" }}</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Interested Vehicle</div>
+              <div class="info-value">{{ lead.vehicle.name|default:"—" }}</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Follow-up Date</div>
+              <div class="info-value">{{ lead.follow_up_date|default:"—" }}</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Assigned To</div>
+              <div class="info-value">{{ lead.assigned_to.username|default:"—" }}</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Created On</div>
+              <div class="info-value">{{ lead.created_at|date:"d M Y" }}</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Job Title</div>
+              <div class="info-value">{{ lead.job_title|default:"—" }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Vehicle -->
+      {% if lead.current_vehicle_owner %}
+      <div class="card">
+        <div class="card-header">🚙 Current Vehicle</div>
+        <div class="card-body">
+          <div class="info-grid">
+            <div class="info-box">
+              <div class="info-label">Vehicle Name</div>
+              <div class="info-value">{{ lead.current_vehicle_name|default:"—" }}</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Year</div>
+              <div class="info-value">{{ lead.current_vehicle_year|default:"—" }}</div>
+            </div>
+            <div class="info-box">
+              <div class="info-label">Value</div>
+              <div class="info-value">₹ {{ lead.current_vehicle_price|default:"—" }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Quotes -->
+      <div class="card">
+        <div class="card-header">🧾 Quotes</div>
+        <div class="card-body">
+          {% if quotes %}
+            {% for quote in quotes %}
+            <div class="quote-item">
+              <div>
+                <div class="quote-info">
+                  <strong>Quote #{{ quote.id }}</strong>
+                  — {{ quote.variant.name }}
+                  {% if quote.is_final %}
+                    <span class="final-badge">Final</span>
+                  {% endif %}
+                </div>
+                <div class="quote-price">₹ {{ quote.total_price }}</div>
+                <div style="font-size:11px;color:#6b7280;margin-top:2px;">
+                  {{ quote.created_at|date:"d M Y" }}
+                </div>
+              </div>
+              <a href="{% url 'view_quote' quote.id %}" class="view-quote-btn">View</a>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-text">No quotes yet.</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Follow Ups -->
+      <div class="card">
+        <div class="card-header">📅 Follow Ups</div>
+        <div class="card-body">
+          {% if followups %}
+            {% for f in followups %}
+            <div class="followup-item">
+              <div class="followup-title">{{ f.task_title }}</div>
+              <div class="followup-meta">
+                📅 {{ f.due_date }} &nbsp;|&nbsp;
+                Priority: {{ f.priority }} &nbsp;|&nbsp;
+                {% if f.completed %}✅ Done{% else %}⏳ Pending{% endif %}
+              </div>
+              {% if f.description %}
+              <div style="font-size:12px;color:#9ca3af;margin-top:6px;">{{ f.description }}</div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-text">No follow ups yet.</div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+    <!-- END LEFT -->
+
+    <!-- ===== RIGHT ===== -->
+    <div>
+
+      <!-- Score -->
+      <div class="card">
+        <div class="card-header">⭐ Lead Score</div>
+        <div class="card-body">
+          <div class="score-big">{{ lead.score }}</div>
+          <div class="score-label">out of 100</div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="card">
+        <div class="card-header">⚡ Actions</div>
+        <div class="card-body">
+          <a href="{% url 'edit_lead' lead.id %}" class="action-btn btn-edit">✏️ Edit Lead</a>
+          <a href="{% url 'add_followup' lead.id %}" class="action-btn btn-primary">📅 Add Follow Up</a>
+          {% if lead.vehicle %}
+            <a href="{% url 'vehicle_detail' lead.vehicle.id %}" class="action-btn btn-secondary">🚗 View Vehicle</a>
+          {% endif %}
+          <a href="{% url 'delete_lead' lead.id %}" class="action-btn btn-delete">🗑 Delete Lead</a>
+        </div>
+      </div>
+
+      <!-- Quick Info -->
+      <div class="card">
+        <div class="card-header">📊 Quick Info</div>
+        <div class="card-body">
+          <div class="info-box" style="margin-bottom:10px;">
+            <div class="info-label">Total Quotes</div>
+            <div class="info-value">{{ quotes|length }}</div>
+          </div>
+          <div class="info-box" style="margin-bottom:10px;">
+            <div class="info-label">Follow Ups</div>
+            <div class="info-value">{{ followups|length }}</div>
+          </div>
+          <div class="info-box">
+            <div class="info-label">Annual Income</div>
+            <div class="info-value">
+              {% if lead.annual_income %}₹ {{ lead.annual_income }}{% else %}—{% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- END RIGHT -->
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block title %}Add Lead{% endblock %}
+
+{% block content %}
+
+<style>
+.page{ padding:20px; }
+.form-grid{ display:grid; grid-template-columns:2fr 1fr; gap:28px; }
+.card{ background:linear-gradient(145deg,rgba(15,23,42,.96),rgba(24,24,27,.95),rgba(30,41,59,.95)); border:1px solid rgba(255,255,255,.08); border-radius:24px; overflow:hidden; margin-bottom:24px; box-shadow:0 12px 35px rgba(0,0,0,.35); }
+.card-header{ padding:18px 24px; font-size:16px; font-weight:700; color:white; background:linear-gradient(90deg,#2563eb,#7c3aed); }
+.card-body{ padding:24px; }
+.two-col{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+label{ display:block; margin-bottom:8px; font-size:13px; font-weight:700; color:#d1d5db; }
+input, select, textarea{ width:100%; padding:13px 14px; border-radius:14px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.05); color:white; font-size:14px; outline:none; transition:.3s; }
+input:focus, select:focus, textarea:focus{ border-color:#7c3aed; box-shadow:0 0 0 4px rgba(124,58,237,.15); }
+select option{ background:#1f2937; color:white; }
+.save-btn{ width:100%; padding:15px; border:none; border-radius:16px; font-size:15px; font-weight:700; color:white; cursor:pointer; background:linear-gradient(135deg,#2563eb,#7c3aed); transition:.3s; box-shadow:0 10px 30px rgba(37,99,235,.35); }
+.save-btn:hover{ transform:translateY(-2px); }
+.side-box{ background:linear-gradient(145deg,rgba(15,23,42,.96),rgba(24,24,27,.95)); border:1px solid rgba(255,255,255,.08); border-radius:22px; overflow:hidden; margin-bottom:24px; box-shadow:0 10px 30px rgba(0,0,0,.35); }
+.side-box h4{ margin:0; padding:16px 22px; font-size:15px; font-weight:700; color:white; background:linear-gradient(90deg,#2563eb,#7c3aed); }
+.side-list{ padding:18px 22px; }
+.side-list li{ font-size:13px; color:#d1d5db; margin-bottom:8px; list-style:none; }
+.side-list li::before{ content:"✓ "; color:#7c3aed; font-weight:700; }
+.quick-actions a{ display:block; text-align:center; padding:14px; margin:16px 18px; border-radius:16px; text-decoration:none; font-weight:700; color:white; background:linear-gradient(135deg,#2563eb,#7c3aed); transition:.3s; }
+.quick-actions a:hover{ transform:translateY(-2px); }
+.checkbox-row{ grid-column:1/3; display:flex; align-items:center; gap:10px; margin-top:8px; color:#d1d5db; font-size:14px; font-weight:600; }
+.checkbox-row input[type="checkbox"]{ width:auto; transform:scale(1.1); }
+.errorlist{ color:#f87171; font-size:12px; margin-top:4px; list-style:none; padding:0; }
+@media(max-width:900px){ .form-grid{ grid-template-columns:1fr; } .two-col{ grid-template-columns:1fr; } }
+</style>
+
+<div class="page">
+
+<h1 style="font-size:30px;font-weight:800;margin-bottom:28px;background:linear-gradient(90deg,#ffffff,#7c3aed,#2563eb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+➕ Create New Lead
+</h1>
+
+<form method="post">
+{% csrf_token %}
+
+<div class="form-grid">
+
+<!-- ===== LEFT ===== -->
+<div>
+
+  <!-- PERSONAL INFO -->
+  <div class="card">
+    <div class="card-header">👤 Personal Information</div>
+    <div class="card-body two-col">
+
+      <div>
+        <label>First Name *</label>
+        {{ form.first_name }}
+        {{ form.first_name.errors }}
+      </div>
+
+      <div>
+        <label>Last Name *</label>
+        {{ form.last_name }}
+        {{ form.last_name.errors }}
+      </div>
+
+      <div>
+        <label>Email *</label>
+        {{ form.email }}
+        {{ form.email.errors }}
+      </div>
+
+      <div>
+        <label>Phone *</label>
+        {{ form.phone }}
+        {{ form.phone.errors }}
+      </div>
+
+      <div>
+        <label>City *</label>
+        {{ form.city }}
+        {{ form.city.errors }}
+      </div>
+
+      <div>
+        <label>Address</label>
+        {{ form.address }}
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CUSTOMER QUALIFICATION -->
+  <div class="card">
+    <div class="card-header">📋 Customer Qualification</div>
+    <div class="card-body two-col">
+
+      <div>
+        <label>Job / Occupation</label>
+        {{ form.job_title }}
+      </div>
+
+      <div>
+        <label>Annual Income</label>
+        {{ form.annual_income }}
+      </div>
+
+      <div class="checkbox-row">
+        {{ form.current_vehicle_owner }}
+        <label for="id_current_vehicle_owner">Current Vehicle Owner</label>
+      </div>
+
+      <div id="vehicle-name" style="display:none">
+        <label>Current Vehicle Name</label>
+        {{ form.current_vehicle_name }}
+      </div>
+
+      <div id="vehicle-year" style="display:none">
+        <label>Vehicle Year</label>
+        {{ form.current_vehicle_year }}
+      </div>
+
+      <div id="vehicle-price" style="display:none">
+        <label>Current Vehicle Price</label>
+        {{ form.current_vehicle_price }}
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LEAD DETAILS -->
+  <div class="card">
+    <div class="card-header">🚗 Lead Details</div>
+    <div class="card-body two-col">
+
+      <div>
+        <label>Interested Vehicle</label>
+        {{ form.vehicle }}
+      </div>
+
+      <div>
+        <label>Source</label>
+        {{ form.source }}
+      </div>
+
+      <div>
+        <label>Status</label>
+        {{ form.status }}
+      </div>
+
+      <div>
+        <label>Priority</label>
+        {{ form.priority }}
+      </div>
+
+      <div>
+        <label>Follow-up Date</label>
+        {{ form.follow_up_date }}
+      </div>
+
+      <div>
+        <label>Assigned Sales Person</label>
+        {{ form.assigned_to }}
+      </div>
+
+    </div>
+  </div>
+
+  <button type="submit" class="save-btn">🚀 Save Lead</button>
+
+</div>
+
+<!-- ===== RIGHT SIDEBAR ===== -->
+<div>
+
+  <div class="side-box">
+    <h4>💡 Tips</h4>
+    <ul class="side-list">
+      <li>Fill all details for better lead scoring</li>
+      <li>Verify phone & email</li>
+      <li>Correct source improves analytics</li>
+      <li>Follow-up date increases conversion</li>
+    </ul>
+  </div>
+
+  <div class="side-box">
+    <h4>⭐ Lead Score Calculation</h4>
+    <ul class="side-list">
+      <li>Source – 20%</li>
+      <li>Priority – 25%</li>
+      <li>Vehicle Interest – 25%</li>
+      <li>Follow-up – 30%</li>
+    </ul>
+  </div>
+
+  <div class="side-box">
+    <h4>⚡ Quick Actions</h4>
+    <div class="quick-actions">
+      <a href="{% url 'my_leads' %}">👥 View All Leads</a>
+      <a href="{% url 'dashboard' %}">📊 Dashboard</a>
+      <a href="{% url 'vehicles' %}">🚘 Vehicles</a>
+    </div>
+  </div>
+
+</div>
+
+</div>
+</form>
+</div>
+
+<script>
+const owner = document.getElementById("id_current_vehicle_owner");
+const nameBox = document.getElementById("vehicle-name");
+const yearBox = document.getElementById("vehicle-year");
+const priceBox = document.getElementById("vehicle-price");
+
+function toggleVehicle(){
+  const show = owner && owner.checked;
+  nameBox.style.display = show ? "block" : "none";
+  yearBox.style.display = show ? "block" : "none";
+  priceBox.style.display = show ? "block" : "none";
+}
+
+if(owner){ owner.addEventListener("change", toggleVehicle); toggleVehicle(); }
+</script>
+
+{% endblock %}

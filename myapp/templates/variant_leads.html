@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Interested Leads{% endblock %}
+
+{% block content %}
+
+<a href="{% url 'view_vehicle' vehicle.id %}" style="color:#8b5cf6;">← Back to {{ vehicle.name }}</a>
+
+<h2 style="margin-top:16px;">👥 Leads Interested in {{ vehicle.name }} – {{ variant.name }}</h2>
+<p style="color:#94a3b8;">{{ interested_count }} leads found</p>
+
+<!-- Search -->
+<form method="GET" style="display:flex;gap:10px;margin:20px 0;">
+    <input type="text" name="search" value="{{ search }}"
+           placeholder="Search name, phone..."
+           style="flex:1;padding:10px;border-radius:10px;border:1px solid #334155;background:#1e293b;color:white;">
+    <select name="status" style="padding:10px;border-radius:10px;border:1px solid #334155;background:#1e293b;color:white;">
+        <option value="">All Status</option>
+        <option value="New"            {% if selected_status == 'New' %}selected{% endif %}>New</option>
+        <option value="Contacted"      {% if selected_status == 'Contacted' %}selected{% endif %}>Contacted</option>
+        <option value="Test_Driven"    {% if selected_status == 'Test_Driven' %}selected{% endif %}>Test Driven</option>
+        <option value="Test_Completed" {% if selected_status == 'Test_Completed' %}selected{% endif %}>Test Completed</option>
+        <option value="Won"            {% if selected_status == 'Won' %}selected{% endif %}>Won</option>
+        <option value="Lost"           {% if selected_status == 'Lost' %}selected{% endif %}>Lost</option>
+    </select>
+    <button type="submit" style="padding:10px 20px;background:#7c3aed;color:white;border:none;border-radius:10px;cursor:pointer;">Filter</button>
+</form>
+
+<!-- Leads Table -->
+<table style="width:100%;border-collapse:collapse;">
+    <thead>
+        <tr style="background:linear-gradient(90deg,#2563eb,#7c3aed);color:white;">
+            <th style="padding:12px;text-align:left;">Name</th>
+            <th style="padding:12px;text-align:left;">Contact</th>
+            <th style="padding:12px;text-align:left;">Status</th>
+            <th style="padding:12px;text-align:left;">Score</th>
+            <th style="padding:12px;text-align:left;">Priority</th>
+            <th style="padding:12px;text-align:left;">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for lead in leads %}
+        <tr style="border-bottom:1px solid #1e293b;">
+            <td style="padding:12px;color:#f1f5f9;">{{ lead.first_name }} {{ lead.last_name }}</td>
+            <td style="padding:12px;color:#94a3b8;">{{ lead.phone }}<br><small>{{ lead.email }}</small></td>
+            <td style="padding:12px;color:#f1f5f9;">{{ lead.status }}</td>
+            <td style="padding:12px;color:#8b5cf6;font-weight:700;">{{ lead.score }}</td>
+            <td style="padding:12px;color:#f1f5f9;">{{ lead.priority }}</td>
+            <td style="padding:12px;">
+                <a href="{% url 'view_lead' lead.id %}" style="margin-right:8px;color:#60a5fa;">👁 View</a>
+                <a href="{% url 'add_followup' lead.id %}" style="margin-right:8px;color:#34d399;">📋 Followup</a>
+                <a href="{% url 'create_quote_variant' variant.id lead.id %}" style="color:#f59e0b;">💰 Quote</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" style="padding:24px;text-align:center;color:#94a3b8;">
+                No leads found for this vehicle.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+<div style="display:flex;gap:8px;margin-top:20px;justify-content:center;">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&search={{ search }}&status={{ selected_status }}"
+           style="padding:8px 16px;background:#1e293b;color:white;border-radius:8px;text-decoration:none;">← Prev</a>
+    {% endif %}
+    <span style="padding:8px 16px;color:#94a3b8;">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&search={{ search }}&status={{ selected_status }}"
+           style="padding:8px 16px;background:#1e293b;color:white;border-radius:8px;text-decoration:none;">Next →</a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

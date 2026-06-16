@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Add Follow-up{% endblock %}
+
+{% block content %}
+
+<div class="form-card">
+
+    <h2>📅 Add Follow-up</h2>
+
+    <p class="text-muted">
+        <b>Lead:</b> {{ lead.first_name }} {{ lead.last_name }}
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label>Task Type</label>
+        {{ form.task_title }}
+
+        <label>Description</label>
+        {{ form.description }}
+
+        <label>Due Date</label>
+        {{ form.due_date }}
+
+        <label>Priority</label>
+        {{ form.priority }}
+
+        <label>Assigned To</label>
+        {{ form.assigned_to }}
+
+        <button type="submit" class="btn-primary">
+            Save Follow-up
+        </button>
+    </form>
+
+</div>
+
+{% endblock %}

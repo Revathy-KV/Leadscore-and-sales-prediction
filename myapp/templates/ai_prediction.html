@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %}AI Prediction{% endblock %}
+
+{% block content %}
+<style>
+.back-btn { display:inline-block; color:#7c3aed; text-decoration:none; font-weight:700; margin-bottom:20px; font-size:14px; }
+.page-title { font-size:26px; font-weight:800; color:white; margin-bottom:24px; }
+
+
+/* FORM CARD */
+.form-card { background:#111827; border-radius:16px; padding:22px; margin-bottom:24px; border:1px solid rgba(255,255,255,.06); }
+.form-card h3 { color:white; font-size:17px; font-weight:700; margin-bottom:16px; }
+.form-row { display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; }
+.form-group { flex:1; min-width:180px; }
+.form-group label { display:block; color:#d1d5db; font-size:13px; font-weight:700; margin-bottom:7px; }
+.form-group input { width:100%; padding:11px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.05); color:white; font-size:14px; outline:none; }
+.form-group input:focus { border-color:#7c3aed; }
+.form-group input[type="date"]::-webkit-calendar-picker-indicator { filter:invert(1); cursor:pointer; }
+.predict-btn { padding:11px 24px; border:none; border-radius:12px; background:linear-gradient(135deg,#2563eb,#7c3aed); color:white; font-weight:700; cursor:pointer; font-size:14px; white-space:nowrap; }
+
+/* PREDICTION RESULT */
+.result-card { background:#111827; border-radius:16px; padding:22px; margin-bottom:24px; border:1px solid rgba(124,58,237,.3); }
+.result-card h3 { color:#a78bfa; font-size:17px; font-weight:700; margin-bottom:18px; }
+.result-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+.result-box { padding:18px; border-radius:14px; border:1px solid rgba(255,255,255,.06); }
+.result-box h4 { color:#94a3b8; font-size:12px; margin-bottom:8px; }
+.result-box h2 { color:white; font-size:26px; font-weight:800; }
+.result-box p { color:#64748b; font-size:11px; margin-top:4px; }
+.box-blue   { background:linear-gradient(135deg,rgba(37,99,235,.15),rgba(37,99,235,.05)); }
+.box-violet { background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(124,58,237,.05)); }
+.box-green  { background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(34,197,94,.04)); }
+.box-amber  { background:linear-gradient(135deg,rgba(234,179,8,.12),rgba(234,179,8,.04)); }
+
+/* MAIN GRID */
+.main-grid { display:grid; grid-template-columns:2fr 1fr; gap:20px; margin-bottom:24px; }
+.chart-card { background:#111827; border-radius:16px; padding:22px; border:1px solid rgba(255,255,255,.06); }
+.chart-card h3 { color:white; font-size:16px; font-weight:700; margin-bottom:16px; }
+.side-card { background:#111827; border-radius:16px; padding:22px; border:1px solid rgba(255,255,255,.06); }
+.side-card h3 { color:white; font-size:16px; font-weight:700; margin-bottom:16px; }
+
+/* TABLES */
+.mini-table { width:100%; border-collapse:collapse; }
+.mini-table th { padding:10px 14px; text-align:left; font-size:12px; color:white; background:linear-gradient(90deg,#2563eb,#7c3aed); }
+.mini-table td { padding:10px 14px; font-size:13px; color:#d1d5db; border-bottom:1px solid rgba(255,255,255,.05); }
+.mini-table tr:last-child td { border-bottom:none; }
+
+/* INSIGHT BAR */
+.insight-bar { background:linear-gradient(135deg,#020617,#172554,#4c1d95); border-radius:16px; padding:22px 28px; display:flex; justify-content:space-between; align-items:center; }
+.insight-bar h3 { color:white; font-size:18px; font-weight:700; margin-bottom:6px; }
+.insight-bar p { color:#94a3b8; font-size:13px; }
+.insight-btn { background:white; color:#111827; padding:11px 22px; border:none; border-radius:12px; font-weight:700; cursor:pointer; font-size:14px; white-space:nowrap; }
+
+@media(max-width:900px) { .kpi-grid{grid-template-columns:repeat(2,1fr);} .result-grid{grid-template-columns:repeat(2,1fr);} .main-grid{grid-template-columns:1fr;} }
+</style>
+
+<a href="{% url 'dashboard' %}" class="back-btn">← Back</a>
+<div class="page-title">🤖 AI Prediction for Future Months</div>
+
+
+<!-- PREDICT FORM -->
+<div class="form-card">
+  <h3>🔮 Select Month to Predict</h3>
+  <form method="GET">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Select Month</label>
+        <input type="month" name="month" value="{{ selected_month }}" required>
+      </div>
+      <button type="submit" class="predict-btn">🔮 Predict</button>
+    </div>
+  </form>
+</div>
+
+<!-- PREDICTION RESULTS -->
+{% if predicted %}
+<div class="result-card">
+  <h3>📊 Prediction for {{ selected_month }}</h3>
+  <div class="result-grid">
+    <div class="result-box box-blue">
+      <h4>Expected Leads</h4>
+      <h2>{{ predicted_leads }}</h2>
+      <p>Projected total leads</p>
+    </div>
+    <div class="result-box box-violet">
+      <h4>Expected Conversion Rate</h4>
+      <h2>{{ conversion_rate }}%</h2>
+      <p>Estimated conversion</p>
+    </div>
+    <div class="result-box box-green">
+      <h4>Expected Converted Leads</h4>
+      <h2>{{ predicted_converted }}</h2>
+      <p>Potential successful sales</p>
+    </div>
+    <div class="result-box box-amber">
+      <h4>Best Weekday to Call</h4>
+      <h2 style="font-size:18px;margin-top:4px;">{{ best_weekday }}</h2>
+      <p>Highest lead activity day</p>
+    </div>
+  </div>
+</div>
+{% endif %}
+<div class="result-card" style="margin-bottom:24px;">
+    <h3>🤖 AI Forecast Engine</h3>
+    <p style="color:#cbd5e1;">
+        Select a future month to predict expected leads, conversions,
+        vehicle demand trends and sales opportunities based on historical CRM data.
+    </p>
+</div>
+<!-- CHART + TABLES -->
+<div class="main-grid">
+
+  <div class="chart-card">
+    <h3>📈 Lead Trend</h3>
+    <canvas id="trendChart"></canvas>
+  </div>
+
+  <div>
+    <div class="side-card" style="margin-bottom:16px;">
+      <h3>🚗 Top Vehicles</h3>
+      <table class="mini-table">
+        <thead><tr><th>Vehicle</th><th>Leads</th></tr></thead>
+        <tbody>
+          {% for v in top_vehicles %}
+          <tr><td>{{ v.vehicle__name }}</td><td>{{ v.count }}</td></tr>
+          {% empty %}
+          <tr><td colspan="2" style="color:#6b7280;text-align:center;">No data</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="side-card">
+      <h3>📣 Lead Sources</h3>
+      <table class="mini-table">
+        <thead><tr><th>Source</th><th>Count</th></tr></thead>
+        <tbody>
+          {% for s in source_data %}
+          <tr><td>{{ s.source }}</td><td>{{ s.count }}</td></tr>
+          {% empty %}
+          <tr><td colspan="2" style="color:#6b7280;text-align:center;">No data</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- INSIGHT BAR -->
+<div class="insight-bar">
+  <div>
+    <h3>AI Smart Insights</h3>
+    <p>Your highest opportunity is in converting new leads. Focus on follow-ups for {{ best_weekday }}.</p>
+  </div>
+  <a href="{% url 'analytics' %}" class="insight-btn">View Analytics</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+try {
+  var labels = JSON.parse('{{ chart_labels|safe }}');
+  var vals   = JSON.parse('{{ chart_data|safe }}');
+  new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Leads Growth',
+        data: vals,
+        borderWidth: 3,
+        tension: .4,
+        fill: true,
+        borderColor: '#7c3aed',
+        backgroundColor: 'rgba(124,58,237,.15)',
+        pointBackgroundColor: '#2563eb',
+        pointRadius: 5
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: '#ffffff' } } },
+      scales: {
+        y: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(255,255,255,.08)' } },
+        x: { ticks: { color: '#cbd5e1' }, grid: { color: 'rgba(255,255,255,.08)' } }
+      }
+    }
+  });
+} catch(e) { console.log(e); }
+</script>
+
+{% endblock %}

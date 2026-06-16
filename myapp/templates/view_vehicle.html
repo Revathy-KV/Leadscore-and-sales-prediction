@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ vehicle.name }}{% endblock %}
+
+{% block content %}
+<style>
+.page{ padding:20px; }
+.vehicle-grid{ display:grid; grid-template-columns:2.3fr 1fr; gap:28px; }
+.card{ background:linear-gradient(145deg,rgba(15,23,42,.96),rgba(24,24,27,.95),rgba(30,41,59,.95)); border:1px solid rgba(255,255,255,.08); border-radius:26px; overflow:hidden; box-shadow:0 15px 40px rgba(0,0,0,.35); margin-bottom:24px; position:relative; }
+.card::before{ content:""; position:absolute; top:-100px; right:-100px; width:220px; height:220px; background:radial-gradient(circle,rgba(124,58,237,.25),transparent 70%); }
+.card-header{ padding:18px 24px; background:linear-gradient(90deg,#2563eb,#7c3aed); color:white; font-size:17px; font-weight:700; }
+.card-body{ padding:24px; }
+.vehicle-img{ width:100%; height:420px; object-fit:cover; border-radius:18px; }
+.no-img{ width:100%; height:420px; background:linear-gradient(135deg,#1e3a8a,#7c3aed); border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:80px; }
+.spec-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:18px; }
+.spec{ background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.06); padding:18px; border-radius:18px; text-align:center; color:#e5e7eb; font-size:14px; }
+.spec b{ display:block; margin-bottom:8px; color:#8b5cf6; font-size:15px; }
+.color-wrapper{ display:flex; flex-wrap:wrap; gap:14px; }
+.color-dot{ background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.06); padding:10px 14px; border-radius:14px; display:flex; align-items:center; gap:10px; color:#f1f5f9; font-size:13px; }
+.color-circle{ width:18px; height:18px; border-radius:50%; border:1px solid rgba(255,255,255,.2); flex-shrink:0; }
+.variant-select{ width:100%; padding:14px; border-radius:16px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.05); color:white; outline:none; font-size:15px; margin-bottom:16px; }
+.variant-select option{ background:#1f2937; }
+.action-btn{ display:block; width:100%; padding:15px; border:none; border-radius:18px; text-align:center; text-decoration:none; font-size:15px; font-weight:700; cursor:pointer; transition:.3s; margin-bottom:12px; }
+.primary{ background:linear-gradient(135deg,#2563eb,#7c3aed); color:white; }
+.primary:hover{ transform:translateY(-2px); }
+.secondary{ background:rgba(255,255,255,.06); color:#dbeafe; border:1px solid rgba(255,255,255,.08); }
+.secondary:hover{ background:rgba(255,255,255,.12); }
+p,label{ color:#d1d5db; }
+.interest-count{ font-size:42px; font-weight:800; text-align:center; color:#8b5cf6; }
+.interest-text{ text-align:center; margin-top:8px; color:#cbd5e1; font-size:14px; }
+@media(max-width:900px){ .vehicle-grid{ grid-template-columns:1fr; } .spec-grid{ grid-template-columns:1fr; } .vehicle-img{ height:260px; } }
+</style>
+
+<div class="page">
+<div class="vehicle-grid">
+
+<!-- ===== LEFT ===== -->
+<div>
+
+  <!-- Photo -->
+  <div class="card">
+    <div class="card-body">
+      {% if vehicle.photo %}
+        <img src="{{ vehicle.photo.url }}" class="vehicle-img" alt="{{ vehicle.name }}">
+      {% else %}
+        <div class="no-img">🚗</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Specifications -->
+  <div class="card">
+    <div class="card-header">⚙ Vehicle Specifications</div>
+    <div class="card-body">
+      <div class="spec-grid">
+        <div class="spec"><b>Fuel Type</b>{{ vehicle.fuel_type|default:"Petrol" }}</div>
+        <div class="spec"><b>Capacity</b>{{ vehicle.max_capacity|default:"5" }} Persons</div>
+        <div class="spec"><b>Power</b>{{ vehicle.power_figures|default:"—" }}</div>
+        <div class="spec"><b>Starting Price</b>₹ {{ vehicle.price|default:"—" }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Colors -->
+  {% with colors=vehicle.colors.all %}
+  {% if colors %}
+  <div class="card">
+    <div class="card-header">🎨 Available Colors</div>
+    <div class="card-body">
+      <div class="color-wrapper">
+        {% for c in colors %}
+        <div class="color-dot">
+          <div class="color-circle" style="background:{{ c.color_code|default:'#888' }};"></div>
+          {{ c.color_name }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  <!-- Variants -->
+  <div class="card">
+    <div class="card-header">🚗 Choose Variant</div>
+    <div class="card-body">
+
+      {% with variants=vehicle.variants.all %}
+      {% if variants %}
+
+        <label style="display:block;margin-bottom:10px;font-weight:700;">
+          Select Variant
+        </label>
+
+        <select id="variantSelect" class="variant-select">
+          <option value="">-- Select Variant --</option>
+          {% for v in variants %}
+          <option value="{{ v.id }}">
+            {{ v.name }} — ₹ {{ v.ex_showroom_price }}
+          </option>
+          {% endfor %}
+        </select>
+
+        <button onclick="goToLeads()" class="action-btn primary">
+          Continue →
+        </button>
+
+      {% else %}
+        <p style="margin-bottom:16px;">No variants added yet.</p>
+        <a href="{% url 'edit_vehicle' vehicle.pk %}" class="action-btn primary">
+          + Add Variants
+        </a>
+      {% endif %}
+      {% endwith %}
+
+    </div>
+  </div>
+
+</div>
+<!-- END LEFT -->
+
+<!-- ===== RIGHT ===== -->
+<div>
+
+  <!-- Create Lead -->
+  <div class="card">
+    <div class="card-header">➕ Create Lead</div>
+    <div class="card-body">
+      <p style="margin-bottom:16px;">
+        Add a new customer interested in this vehicle.
+      </p>
+      <a href="{% url 'add_lead' %}?vehicle={{ vehicle.id }}" class="btn-primary">
+    Create New Lead
+</a>
+    </div>
+  </div>
+
+  <!-- Interested Customers -->
+  <div class="card">
+    <div class="card-header">⭐ Interested Customers</div>
+    <div class="card-body">
+      <div class="interest-count">{{ interested_count }}</div>
+      <div class="interest-text">Total Interested Leads</div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="card">
+    <div class="card-header">⚡ Quick Actions</div>
+    <div class="card-body">
+      <a href="{% url 'dashboard' %}" class="action-btn secondary">🏠 Dashboard</a>
+      <a href="{% url 'vehicles' %}" class="action-btn secondary">🚗 All Vehicles</a>
+      <a href="{% url 'edit_vehicle' vehicle.pk %}" class="action-btn secondary">✏️ Edit Vehicle</a>
+      <a href="{% url 'delete_vehicle' vehicle.pk %}"
+         class="action-btn secondary"
+         style="color:#f87171;">
+         🗑 Delete Vehicle
+      </a>
+    </div>
+  </div>
+
+</div>
+<!-- END RIGHT -->
+
+</div>
+</div>
+
+<script>
+function goToLeads() {
+    const id = document.getElementById('variantSelect').value;
+    if (!id) {
+        alert('Please select a variant first');
+        return;
+    }
+    window.location.href = '/variant/' + id + '/leads/';
+}
+</script>
+
+{% endblock %}

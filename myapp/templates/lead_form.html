@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}New Lead{% endblock %}
+
+{% block content %}
+
+<style>
+
+.lead-box{
+    max-width:700px;
+    margin:auto;
+    padding:35px;
+    border-radius:24px;
+
+    background:linear-gradient(
+    145deg,
+    #0f172a,
+    #111827,
+    #312e81
+    );
+
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+
+.lead-title{
+    font-size:32px;
+    font-weight:800;
+    margin-bottom:25px;
+
+    background:linear-gradient(90deg,#fff,#7c3aed,#2563eb);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.lead-box input,
+.lead-box select,
+.lead-box textarea{
+
+    width:100%;
+    padding:14px;
+    margin-bottom:18px;
+
+    border:none;
+    border-radius:14px;
+
+    background:rgba(255,255,255,.08);
+    color:white;
+}
+
+.save-btn{
+
+    width:100%;
+    padding:15px;
+
+    border:none;
+    border-radius:14px;
+
+    font-weight:700;
+    color:white;
+
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+
+    cursor:pointer;
+}
+
+</style>
+
+<div class="lead-box">
+
+    <h1 class="lead-title">
+        ➕ Add New Lead
+    </h1>
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit" class="save-btn">
+            🚀 Save Lead
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
